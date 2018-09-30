@@ -1,0 +1,98 @@
+# GEO chunk notes
+
+# TGHD Chunk | geometry object header
+	seek(28)
+	geometry.name = str(br.read(32)) # string name padded to 32 bytes
+
+# TGPT Chunk | geometry vertex data
+
+	# TGPH Chunk | geometry vertex data header 
+		br.u32() 
+		geometry.num_verts = br.u16()
+		geometry.num_triangles = br.u16() # collision triangles?
+		geometry.num_meshes = br.u16()
+		br.u8() # unknown  
+		br.u8() # unknown  
+		br.u8() # unknown  
+		br.u8() # unknown  
+		br.u16() # unknown  
+		br.u32() # unknown
+
+	# TGVN Chunk | geometry vertex normals (optional)
+	for chunk_size / 12:
+		geometry.normals.push(vec3(br.f32(), br.f32(), br.f32()))
+
+	# TIVN Chunk | indexed vertex normals (optional)
+
+		# TIDA Chunk | float array
+		for chunk_size / 12:
+			temp_normals.push(vec3(br.f32(), br.f32(), br.f32()))
+
+		# TII8 Chunk | indices 8 bit
+		for chunk_size:
+			index = br.u8()
+			geometry.normals.push(temp_normals[index])
+
+		# TII6 Chunk | indices 16 bit
+		for chunk_size / 2:
+			index = br.u16()
+			geometry.normals.push(temp_normals[index])
+
+	# TGVU Chunk | geometry vertex uvs (optional)
+	for chunk_size / 8:
+		geometry.uvs.push(vec2(br.f32(), br.f32()))
+
+	# TIVU Chunk | indexed vertex uvs (optional)
+
+		# TIDA Chunk | float array
+		for chunk_size / 8:
+			temp_uvs.push(vec2(br.f32(), br.f32()))
+
+		# TII8 Chunk | indices 8 bit
+		for chunk_size:
+			index = br.u8()
+			geometry.uvs.push(temp_uvs[index])
+
+		# TII6 Chunk | indices 16 bit
+		for chunk_size / 2:
+			index = br.u16()
+			geometry.uvs.push(temp_uvs[index])
+
+	# TGVC Chunk | geometry vertex colors (optional)
+	for chunk_size / 4:
+		geometry.colors.push(br.u32())
+
+	# TIVC Chunk | indexed vertex colors (optional)
+	# Should be the same as TIVN or TIVU chunks, but i have not seen it in any files...
+
+	# TGFP Chunk | collision triangle array? (geometry face points?)
+	for i, geometry.num_triangles:
+		triangle = Triangle()
+		triangle.unk1 = br.u8(); # flag / material type / sound? / rail???
+		triangle.unk2 = br.u8(); # flag / material type / sound? / rail???
+		triangle.a = br.u16();
+		triangle.b = br.u16();
+		triangle.c = br.u16();
+		geometry.triangles.push(triangle)
+
+	# TGFM Chunk | mesh triangle data
+	for i, geometry.num_meshes:
+
+		mesh = Mesh()
+		br.u16() # unknown index 
+		num_indices_temp = br.u16()
+
+		for fi, num_indices_temp:
+			index = br.u16()
+
+			if (fi == 0 or fi == 1):
+				index -= 32768
+
+			if (index > geometry.num_verts):
+				break
+
+			mesh.face_indicies.push(index)
+			mesh.num_indices++
+
+		geometry.meshes.push(mesh)
+		pad(4)

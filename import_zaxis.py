@@ -16,7 +16,8 @@ class ChunkType(IntEnum):
 
 	TGEO = 0x4F454754 # geometry object
 	TGHD = 0x44484754 # geometry object header
-	TGPT = 0x54504754 # geometry vertex data
+	TGPT = 0x54504754 # geometry vertex data (geometry point type?)
+	TGPH = 0x48504754 # geometry vertex data header (geometry point header?)
 
 	TGIH = 0x48494754 # geometry instance header
 	TGIN = 0x4E494754 # geometry instance
@@ -24,18 +25,18 @@ class ChunkType(IntEnum):
 	TMTB = 0x42544D54 # mesh material ids
 	MATI = 0x4954414D # material
 
-	TGFM = 0x4D464754 # mesh triangle array / triangle strip?
-	TGFP = 0x50464754 # collision triangle array?
+	TGFM = 0x4D464754 # mesh triangle array / triangle strip? (geometry face mesh?)
+	TGFP = 0x50464754 # collision triangle array? (geometry face points?)
 
-	TIDA = 0x41444954 # float array
-	TGVP = 0x50564754 # vertex position array
-	TGVN = 0x4E564754 # vertex normals array
-	TGVC = 0x43564754 # vertex color
-	TGVU = 0x55564754 # vertex uvs
+	TIDA = 0x41444954 # float array (indexed data array?)
+	TGVP = 0x50564754 # vertex position array (geometry vertex points)
+	TGVN = 0x4E564754 # vertex normals array (geometry vertex normals)
+	TGVC = 0x43564754 # vertex color (geometry vertex colors)
+	TGVU = 0x55564754 # vertex uvs (geometry vertex uvs)
 
-	TIVU = 0x55564954 # vertex uv container
-	TIVN = 0x4E564954 # vertex normal container
-	TIVC = 0x43564954 # vertex color container
+	TIVU = 0x55564954 # vertex uv container (indexed vertex uvs)
+	TIVN = 0x4E564954 # vertex normal container (indexed vertex normals)
+	TIVC = 0x43564954 # vertex color container (indexed indexed colors)
 
 	TII8 = 0x38494954 # indices 8 bit. see (TIVN, TGVU, TIVC)
 	TII6 = 0x36494954 # indices 16 bit. see (TIVN, TGVU, TIVC)
@@ -48,16 +49,15 @@ class ChunkType(IntEnum):
 	TTGA = 0x41475454 # TGA image
 
 	TGTD = 0x44544754 # 
-	TGPH = 0x48504754
+	TGFN = 0x4E464754
+	TIFN = 0x4E464954
 	TGLO = 0x4F4C4754
 	TGCI = 0x49434754
 	TGFE = 0x45464754
-	TGFN = 0x4E464754
 	TGFR = 0x52464754
 	TGFT = 0x54464754
 	TXRC = 0x43525854
 	TGIT = 0x54494754
-	TIFN = 0x4E464954
 
 	DIDF = 0x46444944
 	GRID = 0x44495247
@@ -85,7 +85,7 @@ class ChunkType(IntEnum):
 	ASCA = 0x41435341
 	ACBH = 0x48424341
 	ACBD = 0x44424341
-	ACB = 0x49424341
+	ACBI = 0x49424341
 	ZFFD = 0x4446465A
 	ZPEC = 0x4345505A
 	ZPEO = 0x4F45505A
@@ -154,7 +154,7 @@ class ZiffChunk:
 			self.size = br.u32()
 			chunk_start_offset = br.offset
 
-			print('Reading {} Chunk at {}, Size {}'.format(str(self.type), str(chunk_start_offset - 8), str(self.size)))
+			print('Reading {} at {}, Size {}'.format(str(self.type), str(chunk_start_offset - 8), str(self.size)))
 
 			self.data = br.read('{}x'.format(str(self.size)))
 			chunk_end_offset = br.offset
@@ -182,7 +182,7 @@ class ZiffChunk:
 		self.size = br.u32()
 		chunk_start_offset = br.offset
 
-		print('Reading {} Root at {}, Size {}'.format(str(ChunkType(self.type)), str(chunk_start_offset - 8), str(self.size)))
+		print('Reading Root {} at {}, Size {}'.format(str(ChunkType(self.type)), str(chunk_start_offset - 8), str(self.size)))
 
 		self.data = br.read('{}x'.format(str(self.size)))
 		chunk_end_offset = br.offset
