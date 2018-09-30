@@ -5,6 +5,7 @@ from . import_thug1 import THUG1ScnToScene
 from . import_thug2 import THUG2ScnToScene, THUG2ColToScene
 from . import_park import ImportTHUGPrk
 from . import_thps2 import THPS2PsxToScene
+from . import_zaxis import ZAxisToScene
 from . tex import THUGImgToImages
 from . qb import THUGImportLevelQB
 from . skeleton import THUGImportSkeleton
@@ -221,6 +222,7 @@ def import_menu_func(self, context):
     self.layout.operator(THUGImportSkeleton.bl_idname, text=THUGImportSkeleton.bl_label, icon='PLUGIN')
     self.layout.operator(ImportTHUGPrk.bl_idname, text=ImportTHUGPrk.bl_label, icon='PLUGIN')
     self.layout.operator(THUGImgToImages.bl_idname, text=THUGImgToImages.bl_label, icon='PLUGIN')
+    self.layout.operator(ZAxisToScene.bl_idname, text=ZAxisToScene.bl_label, icon='PLUGIN')
 #----------------------------------------------------------------------------------    
 def export_menu_func(self, context):
     #self.layout.operator(SceneToTHPS4Files.bl_idname, text="Scene to THPS4 level files", icon='PLUGIN')
