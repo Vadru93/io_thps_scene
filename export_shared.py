@@ -558,6 +558,7 @@ def export_col(filename, directory, target_game, operator=None):
         node_face_index_offset = 0
         node_faces = []
         face_index = 0
+        first_object = true
 
         DBG = lambda *args: LOG.debug(" ".join(str(arg) for arg in args))
 
@@ -620,7 +621,7 @@ def export_col(filename, directory, target_game, operator=None):
             if target_game != 'THPS4':
                 obj_bsp_offset += len(list(iter_tree(obj_bsp_tree))) * SIZEOF_BSP_NODE
             else:
-                obj_bsp_offset += SIZEOF_BSP_NODE
+                obj_bsp_offset += SIZEOF_BSP_NODE_THPS4
             # THPS4: Intensity list does not exist, intensity is appended to each vert
             if target_game == 'THPS4':
                 w("I", 0)
@@ -687,8 +688,10 @@ def export_col(filename, directory, target_game, operator=None):
                 nodes_out.write(struct.pack(fmt, *args))
 
             if target_game == 'THPS4': #testing exporting of 1 leaf
-                num_faces = len(o.faces)
-                w("I", len(out_object)* SIZEOF_BSP_NODE)
+                if first_object:
+                    first_object = false
+                    num_faces = len(o.faces)
+                w("I", len(out_object)* SIZEOF_BSP_NODE_THPS4)
                 w("B", 0xFF)
                 w("B", 0x00)
                 w("H", num_faces)
@@ -731,9 +734,8 @@ def export_col(filename, directory, target_game, operator=None):
 
         
             
-        
         def w(fmt, *args):
-            outp.write(struct.pack(fmt, *args))
+                nodes_out.write(struct.pack(fmt, *args))
         if target_name == 'THPS4':
             for o in out_objects:
                 index = 0
@@ -741,7 +743,8 @@ def export_col(filename, directory, target_game, operator=None):
                     w("H", index)
                     index++
                   
-            
+         def w(fmt, *args):
+            outp.write(struct.pack(fmt, *args))
         tmp_offset = outp.tell()
         outp.seek(total_verts_offset)
         w("i", total_verts)
